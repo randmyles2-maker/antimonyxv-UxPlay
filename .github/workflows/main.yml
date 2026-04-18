@@ -1,0 +1,27 @@
+name: Build My iPhone Mirror App
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          choco install cmake openssl gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad -y
+          echo "C:\gstreamer\1.0\msvc_x86_64\bin" >> $GITHUB_PATH
+
+      - name: Compile App
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DNO_X11_DEPS=ON
+          cmake --build . --config Release
+
+      - name: Upload Finished App
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mirror-App-Windows
+          path: build/Release/uxplay.exe
