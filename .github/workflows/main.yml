@@ -10,18 +10,20 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          # Use a single install command for reliability
+          # These are the exact requirements for the UxPlay code
           choco install cmake openssl gstreamer -y
-          # Define paths for the compiler
+          # Setting the exact paths for the Windows system
           echo "C:\gstreamer\1.0\msvc_x86_64\bin" >> $GITHUB_PATH
           echo "GSTREAMER_1_0_ROOT_MSVC_X86_64=C:\gstreamer\1.0\msvc_x86_64\" >> $GITHUB_ENV
 
       - name: Compile App
         shell: bash
         run: |
+          # Moving specifically into your project folder
+          cd antimonyxv-UxPlay
           mkdir build
           cd build
-          # Explicitly pointing to GStreamer and OpenSSL locations
+          # Explicitly linking the libraries to the compiler
           cmake .. -DNO_X11_DEPS=ON \
                    -DOPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64" \
                    -DGSTREAMER_1_0_ROOT_MSVC_X86_64="C:/gstreamer/1.0/msvc_x86_64/"
@@ -31,4 +33,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Mirror-App-Windows
-          path: build/Release/uxplay.exe
+          # Telling GitHub exactly where the output file is located
+          path: antimonyxv-UxPlay/build/Release/uxplay.exe
