@@ -10,8 +10,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          choco install cmake openssl gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad -y
-          # This tells the builder exactly where the video tools are located
+          # Use a single install command for reliability
+          choco install cmake openssl gstreamer -y
+          # Define paths for the compiler
           echo "C:\gstreamer\1.0\msvc_x86_64\bin" >> $GITHUB_PATH
           echo "GSTREAMER_1_0_ROOT_MSVC_X86_64=C:\gstreamer\1.0\msvc_x86_64\" >> $GITHUB_ENV
 
@@ -20,8 +21,10 @@ jobs:
         run: |
           mkdir build
           cd build
-          # We add a flag to skip 'X11' because that is for Linux, not Windows
-          cmake .. -DNO_X11_DEPS=ON -DOPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64"
+          # Explicitly pointing to GStreamer and OpenSSL locations
+          cmake .. -DNO_X11_DEPS=ON \
+                   -DOPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64" \
+                   -DGSTREAMER_1_0_ROOT_MSVC_X86_64="C:/gstreamer/1.0/msvc_x86_64/"
           cmake --build . --config Release
 
       - name: Upload Finished App
